@@ -1,11 +1,7 @@
 package org.delfin.controller;
 
-import org.delfin.exception.CustomerNotFoundException;
-import org.delfin.exception.AccountNotFoundException;
 import org.delfin.model.Account;
 import org.delfin.model.Customer;
-import org.delfin.repository.AccountRepository;
-import org.delfin.repository.CustomerRepository;
 import org.delfin.service.CustomerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +18,7 @@ import java.util.Optional;
  * @author Andreas Ersch <andreas.ersch@gmail.com>
  */
 @RestController
-@RequestMapping("/customers")
+@RequestMapping("/customer")
 public class CustomerController {
 
     private static final Logger LOG = LoggerFactory.getLogger(CustomerController.class);
@@ -37,26 +33,38 @@ public class CustomerController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Customer createCustomer(@RequestBody Customer customer) {
+        LOG.info("Create customer: " + customer.toString());
         return customerService.save(customer);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Customer> getCustomer(@PathVariable Long id) {
-        Customer customer = customerService.findById(id);
-        return ResponseEntity.ok(customer);
+        Optional<Customer> customer = customerService.findById(id);
+        LOG.info("Requested info for customerID " + id);
+        return customer.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody Customer updatedCustomer) {
-        if(!updatedCustomer.getId().equals(id)) {
-            return ResponseEntity.unprocessableEntity().build();
+        Optional<Customer> existingCustomer = customerService.findById(id);
+        LOG.debug("Attempt to update customer with ID " + id);
+
+        if (existingCustomer.isPresent()) {
+            Customer customer = existingCustomer.get();
+            customer.setFirstName(updatedCustomer.getFirstName());
+            customer.setLastName(updatedCustomer.getLastName());
+            customer.setUpdated(LocalDateTime.now());
+            LOG.info("Updating customer " + customer);
+            return ResponseEntity.ok(customerService.update(customer));
+        } else {
+            LOG.error("Customer not found for ID " + id);
+            return ResponseEntity.notFound().build();
         }
-        Customer customer = customerService.update(updatedCustomer);
-        return ResponseEntity.ok(customer);
     }
 
     @GetMapping("/{id}/accounts")
     public ResponseEntity<List<Account>> getAccounts(@PathVariable Long id) {
+        LOG.info("Requested accounts for customerID " + id);
         List<Account> accounts = customerService.getAccountsForCustomer(id);
         return ResponseEntity.ok(accounts);
     }

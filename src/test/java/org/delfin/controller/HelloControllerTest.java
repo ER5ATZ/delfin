@@ -23,11 +23,11 @@ public class HelloControllerTest {
     private String greetingMessage;
 
     @Autowired
-    private MockMvc mvc;
+    private MockMvc mockMvc;
 
     @Test
-    void contextLoads() throws Exception {
-        mvc.perform(get("/hello")
+    void getHelloReturnsGreetingMessage() throws Exception {
+        mockMvc.perform(get("/hello")
                         .contentType(MediaType.TEXT_PLAIN))
                 .andExpect(status().isOk())
                 .andExpect(content().string(greetingMessage));

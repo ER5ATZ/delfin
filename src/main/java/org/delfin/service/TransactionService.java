@@ -29,13 +29,13 @@ public class TransactionService {
     }
 
     public Transaction createTransaction(Transaction transaction) throws AccountNotFoundException {
-        Optional<Account> optionalAccount = accountRepository.findById(transaction.getAccountId());
+        Optional<Account> optionalAccount = accountRepository.findById(transaction.getAccount().getId());
         if (!optionalAccount.isPresent()) {
-            throw new AccountNotFoundException(transaction.getAccountId());
+            throw new AccountNotFoundException(transaction.getAccount().getId());
         }
         Account account = optionalAccount.get();
 
-        transaction.setAccountId(account.getId());
+        transaction.setAccount(account);
         account.setBalance(account.getBalance().add(transaction.getAmount()));
 
         accountRepository.save(account);
@@ -69,5 +69,9 @@ public class TransactionService {
 
     public Transaction save(Transaction transaction) {
         return transactionRepository.save(transaction);
+    }
+
+    public List<Transaction> getAllTransactions() {
+        return transactionRepository.findAll();
     }
 }

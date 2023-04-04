@@ -1,19 +1,20 @@
 package org.delfin.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * @author Andreas Ersch <andreas.ersch@gmail.com>
  */
 @Entity
 @Table(name = "customer")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Customer {
@@ -35,5 +36,17 @@ public class Customer {
 
     @Column(name = "updated")
     private LocalDateTime updated;
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", active=" + active +
+                ", created=" + created +
+                ", updated=" + updated +
+                '}';
+    }
 }
 

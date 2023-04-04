@@ -17,7 +17,7 @@ import java.util.Optional;
  * @author Andreas Ersch <andreas.ersch@gmail.com>
  */
 @RestController
-@RequestMapping("/transactions")
+@RequestMapping("/transaction")
 public class TransactionController {
 
     private static final Logger LOG = LoggerFactory.getLogger(TransactionController.class);
@@ -33,8 +33,10 @@ public class TransactionController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Transaction> createTransaction(@RequestBody Transaction transaction) {
         try {
+            LOG.info("Add transaction: " + transaction.toString());
             return ResponseEntity.ok(transactionService.createTransaction(transaction));
         } catch (AccountNotFoundException ex) {
+            LOG.error("Failed to add transaction " + transaction.toString());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
@@ -42,6 +44,7 @@ public class TransactionController {
     @GetMapping("/{id}")
     public ResponseEntity<Transaction> getTransaction(@PathVariable Long id) {
         Optional<Transaction> transaction = transactionService.findById(id);
+        LOG.info("Requested info for transactionID " + id);
 
         return transaction.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -71,6 +74,8 @@ public class TransactionController {
 
     @GetMapping("/accounts/{id}")
     public ResponseEntity<List<Transaction>> getTransactionsForAccount(@PathVariable Long id) {
+        LOG.info("Requested transaction for accountID " + id);
+        //TODO limit the amount of returned transactions
         List<Transaction> transactions = transactionService.getTransactionsForAccount(id);
         return ResponseEntity.ok(transactions);
     }

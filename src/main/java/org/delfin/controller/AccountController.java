@@ -16,7 +16,7 @@ import java.util.Optional;
  * @author Andreas Ersch <andreas.ersch@gmail.com>
  */
 @RestController
-@RequestMapping("/accounts")
+@RequestMapping("/account")
 public class AccountController {
 
     private static final Logger LOG = LoggerFactory.getLogger(AccountController.class);
@@ -31,7 +31,7 @@ public class AccountController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Account createAccount(@RequestBody Account account) {
-        LOG.debug("Create account: " + account.toString());
+        LOG.info("Create account: " + account.toString());
         return accountService.save(account);
     }
 
@@ -51,10 +51,10 @@ public class AccountController {
             Account account = existingAccount.get();
             account.setCurrency(updatedAccount.getCurrency());
             account.setBalance(updatedAccount.getBalance());
-            account.setLimit(updatedAccount.getLimit());
+            account.setAccountLimit(updatedAccount.getAccountLimit());
             account.setUpdated(LocalDateTime.now());
             LOG.info("Updating account " + account.toString());
-            return ResponseEntity.ok(accountService.save(account));
+            return ResponseEntity.ok(accountService.update(account));
         } else {
             LOG.error("Account not found for ID " + id);
             return ResponseEntity.notFound().build();

@@ -8,7 +8,6 @@ import org.delfin.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +34,7 @@ public class AccountService {
 
     public Optional<Account> findById(Long id) {
         return Optional.ofNullable(accountRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Account not found with id: " + id)));
+                .orElseThrow(() -> new AccountNotFoundException(id)));
     }
 
     public Account save(Account account) {
