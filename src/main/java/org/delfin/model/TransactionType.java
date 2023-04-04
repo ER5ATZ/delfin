@@ -4,11 +4,18 @@ package org.delfin.model;
  * @author Andreas Ersch <andreas.ersch@gmail.com>
  */
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @Table(name = "transactiontype")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class TransactionType {
 
     @Id
@@ -20,38 +27,6 @@ public class TransactionType {
 
     @Column(name = "calculationmethod")
     private String calculationMethod;
-
-    public TransactionType() {
-    }
-
-    public TransactionType(String typeName, String calculationMethod) {
-        this.typeName = typeName;
-        this.calculationMethod = calculationMethod;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTypeName() {
-        return typeName;
-    }
-
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
-    }
-
-    public String getCalculationMethod() {
-        return calculationMethod;
-    }
-
-    public void setCalculationMethod(String calculationMethod) {
-        this.calculationMethod = calculationMethod;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -76,4 +51,5 @@ public class TransactionType {
                 '}';
     }
 }
+
 
