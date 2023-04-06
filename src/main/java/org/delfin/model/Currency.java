@@ -4,7 +4,7 @@ package org.delfin.model;
  * @author Andreas Ersch <andreas.ersch@gmail.com>
  */
 public enum Currency {
-    EUR("Euro", "", "EUR"),
+    EUR("Euro", "€", "EUR"),
     USD("US Dollar", "$", "USD");
 
     private String code;

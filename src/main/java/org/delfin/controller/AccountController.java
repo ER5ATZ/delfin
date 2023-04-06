@@ -1,6 +1,11 @@
 package org.delfin.controller;
 
+import org.delfin.constant.Endpoint;
+import org.delfin.exception.AccountNotFoundException;
 import org.delfin.model.Account;
+import org.delfin.model.Transaction;
+import org.delfin.model.entity.AccountEntity;
+import org.delfin.model.entity.TransactionEntity;
 import org.delfin.service.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,13 +15,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.List;
 
 /**
  * @author Andreas Ersch <andreas.ersch@gmail.com>
  */
 @RestController
-@RequestMapping("/account")
+@RequestMapping(Endpoint.ACCOUNT)
 public class AccountController {
 
     private static final Logger LOG = LoggerFactory.getLogger(AccountController.class);
@@ -30,49 +35,64 @@ public class AccountController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Account createAccount(@RequestBody Account account) {
+    public ResponseEntity<Account> createAccount(@RequestBody Account account) {
         LOG.info("Create account: " + account.toString());
-        return accountService.save(account);
+        try {
+            return ResponseEntity.ok(accountService.save(account));
+        } catch (Exception ex) {
+            LOG.error("Unexpected internal error: " + ex);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     public ResponseEntity<Account> getAccount(@PathVariable Long id) {
-        Optional<Account> account = accountService.findById(id);
         LOG.info("Requested info for accountID " + id);
-        return account.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        try {
+            Account account = accountService.findById(id);
+            return ResponseEntity.ok(account);
+        } catch (AccountNotFoundException ex) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception ex) {
+            LOG.error("Unexpected internal error: " + ex);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("{id}")
     public ResponseEntity<Account> updateAccount(@PathVariable Long id, @RequestBody Account updatedAccount) {
-        Optional<Account> existingAccount = accountService.findById(id);
         LOG.debug("Attempt to update account with ID " + id);
-
-        if (existingAccount.isPresent()) {
-            Account account = existingAccount.get();
-            account.setCurrency(updatedAccount.getCurrency());
-            account.setBalance(updatedAccount.getBalance());
-            account.setAccountLimit(updatedAccount.getAccountLimit());
-            account.setUpdated(LocalDateTime.now());
-            LOG.info("Updating account " + account.toString());
-            return ResponseEntity.ok(accountService.update(account));
-        } else {
-            LOG.error("Account not found for ID " + id);
-            return ResponseEntity.notFound().build();
+        try {
+            LOG.info("Updating account " + updatedAccount.toEntity().toString());
+            return ResponseEntity.ok(accountService.update(updatedAccount));
+        } catch (AccountNotFoundException ex) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception ex) {
+            LOG.error("Unexpected internal error: " + ex);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
-        Optional<Account> account = accountService.findById(id);
-        if (account.isPresent()) {
-            Account deleted = account.get();
-            deleted.setActive(false);
-            accountService.update(deleted);
-            LOG.info("Deactivating account with ID" + id);
+        LOG.info("Deactivating account with ID" + id);
+        try {
+            accountService.deleteById(id);
             return ResponseEntity.noContent().build();
-        } else {
+        } catch (AccountNotFoundException ex) {
             LOG.error("Account not found for ID " + id);
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
+        } catch (Exception ex) {
+            LOG.error("Unexpected internal error: " + ex);
+            return ResponseEntity.internalServerError().build();
         }
+
+    }
+
+    @GetMapping("{id}/transactions")
+    public ResponseEntity<List<Transaction>> getTransactionsForAccount(@PathVariable Long id) {
+        LOG.info("Requested transaction for accountID " + id);
+        List<Transaction> transactions = accountService.getTransactionsForAccount(id);
+        return ResponseEntity.ok(transactions);
     }
 }

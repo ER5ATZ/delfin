@@ -1,4 +1,4 @@
-package org.delfin.model;
+package org.delfin.model.entity;
 
 /**
  * @author Andreas Ersch <andreas.ersch@gmail.com>
@@ -18,7 +18,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionType {
+public class TransactionTypeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +34,7 @@ public class TransactionType {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TransactionType that = (TransactionType) o;
+        TransactionTypeEntity that = (TransactionTypeEntity) o;
         return Objects.equals(typeName, that.typeName) &&
                 Objects.equals(calculationMethod, that.calculationMethod);
     }

@@ -34,7 +34,7 @@ CREATE TABLE transaction (
   prevbalance DECIMAL(10,2) NOT NULL,
   newbalance DECIMAL(10,2) NOT NULL,
   transactiontime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  booked BOOLEAN NOT NULL DEFAULT true,
+  booked BOOLEAN NOT NULL DEFAULT false,
   FOREIGN KEY (accountid) REFERENCES account(id),
   FOREIGN KEY (transactiontypeid) REFERENCES transactiontype(id)
 );
@@ -43,8 +43,3 @@ INSERT INTO transactiontype (id, typename, calculationmethod) VALUES
   (1, 'DEPOSIT', '+'),
   (2, 'WITHDRAWAL', '-'),
   (3, 'BALANCE', '');
-
-INSERT INTO customer (id, firstname, lastname, active, created, updated) VALUES
-  (1, 'John', 'Doe', false, NOW(), NOW()),
-  (2, 'Jane', 'Doe', true, NOW(), NOW()),
-  (3, 'Bob', 'Smith', false, NOW(), NOW());

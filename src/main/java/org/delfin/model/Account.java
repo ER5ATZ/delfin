@@ -4,59 +4,53 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.delfin.constant.Endpoint;
+import org.delfin.model.entity.AccountEntity;
+import org.delfin.model.entity.CustomerEntity;
+import org.springframework.hateoas.Link;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
  * @author Andreas Ersch <andreas.ersch@gmail.com>
  */
-@Entity
-@Table(name = "account")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Account {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customerid", nullable = false)
-    private Customer customer;
-
-    @Column(name = "currency", nullable = false)
+    private Object customer;
     private String currency;
-
-    @Column(name = "balance", nullable = false)
     private BigDecimal balance;
-
-    @Column(name = "accountlimit", nullable = false)
     private BigDecimal accountLimit;
-
-    @Column(name = "active")
-    private Boolean active;
-
-    @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
-    @Column(name = "updated", nullable = false)
-    private LocalDateTime updated;
+    public Account(AccountEntity accountEntity) {
+        this.id = accountEntity.getId();
+        this.customer = Link.of(Endpoint.CUSTOMER + accountEntity.getCustomer().getId());
+        this.currency = accountEntity.getCurrency();
+        this.balance = accountEntity.getBalance();
+        this.accountLimit = accountEntity.getAccountLimit();
+        this.created = accountEntity.getCreated();
+    }
 
-    @Override
-    public String toString() {
-        return "Account{" +
-                "id=" + id +
-                ", customerId=" + customer.getId() +
-                ", currency='" + currency + '\'' +
-                ", balance=" + balance +
-                ", accountLimit=" + accountLimit +
-                ", active=" + active +
-                ", created=" + created +
-                ", updated=" + updated +
-                '}';
+    public AccountEntity toEntity() {
+        AccountEntity accountEntity = new AccountEntity();
+        accountEntity.setId(this.id);
+        CustomerEntity customerEntity = new CustomerEntity();
+        customerEntity.setId((Long) this.customer);
+        accountEntity.setCustomer(customerEntity);
+        accountEntity.setCurrency(this.currency);
+        accountEntity.setBalance(this.balance);
+        accountEntity.setAccountLimit(this.accountLimit);
+        accountEntity.setCreated(this.created);
+        return accountEntity;
     }
 }
+
+
+
 

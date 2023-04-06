@@ -1,7 +1,15 @@
 package org.delfin.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.delfin.constant.Endpoint;
+import org.delfin.exception.AccountNotFoundException;
+import org.delfin.exception.CustomerNotFoundException;
 import org.delfin.model.Account;
 import org.delfin.model.Customer;
+import org.delfin.model.entity.AccountEntity;
+import org.delfin.model.entity.CustomerEntity;
 import org.delfin.service.CustomerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,14 +19,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Andreas Ersch <andreas.ersch@gmail.com>
  */
 @RestController
-@RequestMapping("/customer")
+@RequestMapping(Endpoint.CUSTOMER)
 public class CustomerController {
 
     private static final Logger LOG = LoggerFactory.getLogger(CustomerController.class);
@@ -32,41 +40,63 @@ public class CustomerController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Customer createCustomer(@RequestBody Customer customer) {
-        LOG.info("Create customer: " + customer.toString());
-        return customerService.save(customer);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Customer> getCustomer(@PathVariable Long id) {
-        Optional<Customer> customer = customerService.findById(id);
-        LOG.info("Requested info for customerID " + id);
-        return customer.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody Customer updatedCustomer) {
-        Optional<Customer> existingCustomer = customerService.findById(id);
-        LOG.debug("Attempt to update customer with ID " + id);
-
-        if (existingCustomer.isPresent()) {
-            Customer customer = existingCustomer.get();
-            customer.setFirstName(updatedCustomer.getFirstName());
-            customer.setLastName(updatedCustomer.getLastName());
-            customer.setUpdated(LocalDateTime.now());
-            LOG.info("Updating customer " + customer);
-            return ResponseEntity.ok(customerService.update(customer));
-        } else {
-            LOG.error("Customer not found for ID " + id);
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
+        LOG.info("Create customer: " + customer.toEntity().toString());
+        try {
+            return ResponseEntity.ok(customerService.save(customer));
+        } catch (Exception ex) {
+            LOG.error("Unexpected internal error: " + ex);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
-    @GetMapping("/{id}/accounts")
-    public ResponseEntity<List<Account>> getAccounts(@PathVariable Long id) {
+    @GetMapping("{id}")
+    @Operation(summary = "Get customer by ID", description = "Returns data for a single customer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Customer found"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "500", description = "Internal error")
+    })
+    public ResponseEntity<Customer> getCustomer(@PathVariable Long id) {
+        LOG.info("Requested info for customerID " + id);
+        try {
+            Customer customer = customerService.findById(id);
+            return ResponseEntity.ok(customer);
+        } catch (CustomerNotFoundException ex) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception ex) {
+            LOG.error("Unexpected internal error: " + ex);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody Customer updatedCustomer) {
+        LOG.debug("Attempt to update customer with ID " + id);
+        try {
+            return ResponseEntity.ok(customerService.update(updatedCustomer));
+        } catch (CustomerNotFoundException ex) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception ex) {
+            LOG.error("Unexpected internal error: " + ex);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("{id}/accounts")
+    public ResponseEntity<List<Account>> getAccountsForCustomer(@PathVariable Long id) {
         LOG.info("Requested accounts for customerID " + id);
-        List<Account> accounts = customerService.getAccountsForCustomer(id);
-        return ResponseEntity.ok(accounts);
+        try {
+            List<Account> accounts = customerService.getAccountsForCustomer(id);
+            return ResponseEntity.ok(accounts);
+        } catch (CustomerNotFoundException ex) {
+            return ResponseEntity.badRequest().build();
+        } catch (AccountNotFoundException ex) {
+            return ResponseEntity.ok(Collections.emptyList());
+        } catch (Exception ex) {
+            LOG.error("Unexpected internal error: " + ex);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
 

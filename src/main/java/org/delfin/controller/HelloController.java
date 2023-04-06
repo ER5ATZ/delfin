@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Andreas Ersch <andreas.ersch@gmail.com>
  */
 @RestController
-@RequestMapping("/hello")
+@RequestMapping("/")
 public class HelloController {
 
     private static final Logger LOG = LoggerFactory.getLogger(HelloController.class);

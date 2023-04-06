@@ -1,16 +1,18 @@
 package org.delfin.service;
 
+import org.delfin.TransactionLogic;
 import org.delfin.exception.AccountNotFoundException;
-import org.delfin.model.Account;
+import org.delfin.exception.TransactionExceedsLimitException;
+import org.delfin.exception.TransactionNotFoundException;
 import org.delfin.model.Transaction;
+import org.delfin.model.entity.AccountEntity;
+import org.delfin.model.entity.TransactionEntity;
 import org.delfin.repository.AccountRepository;
 import org.delfin.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Andreas Ersch <andreas.ersch@gmail.com>
@@ -28,50 +30,35 @@ public class TransactionService {
         this.accountRepository = accountRepository;
     }
 
-    public Transaction createTransaction(Transaction transaction) throws AccountNotFoundException {
-        Optional<Account> optionalAccount = accountRepository.findById(transaction.getAccount().getId());
-        if (!optionalAccount.isPresent()) {
-            throw new AccountNotFoundException(transaction.getAccount().getId());
-        }
-        Account account = optionalAccount.get();
+    public Transaction createTransaction(Transaction transaction) throws AccountNotFoundException, TransactionExceedsLimitException {
+        Long accountId = (Long) transaction.getAccount();
+        AccountEntity account = accountRepository.findById(accountId)
+                .orElseThrow(()-> new AccountNotFoundException(accountId));
+        TransactionEntity entity = TransactionLogic.calculateNewBalance(
+                account.getAccountLimit(),
+                account.getBalance(),
+                transaction
+        );
 
-        transaction.setAccount(account);
-        account.setBalance(account.getBalance().add(transaction.getAmount()));
-
+        transactionRepository.save(entity);
+        account.setBalance(entity.getNewBalance());
         accountRepository.save(account);
-        return transactionRepository.save(transaction);
+        return new Transaction(entity);
     }
 
-    public List<Transaction> getTransactionsForAccount(Long accountId) {
+    public List<TransactionEntity> getTransactionsForAccount(Long accountId) {
         return transactionRepository.findByAccountId(accountId);
     }
 
-    public BigDecimal calculateAccountBalance(Long accountId) throws AccountNotFoundException {
-        Optional<Account> optionalAccount = accountRepository.findById(accountId);
-        if (!optionalAccount.isPresent()) {
-            throw new AccountNotFoundException(accountId);
-        }
-        Account account = optionalAccount.get();
-
-        BigDecimal balance = account.getBalance();
-        List<Transaction> transactions = transactionRepository.findByAccountId(accountId);
-
-        for (Transaction transaction : transactions) {
-            balance = balance.add(transaction.getAmount());
-        }
-
-        return balance;
+    public Transaction findById(Long id) throws TransactionNotFoundException {
+        return new Transaction(transactionRepository.findById(id).orElseThrow(() -> new TransactionNotFoundException(id)));
     }
 
-    public Optional<Transaction> findById(Long id) {
-        return transactionRepository.findById(id);
-    }
-
-    public Transaction save(Transaction transaction) {
+    public TransactionEntity save(TransactionEntity transaction) {
         return transactionRepository.save(transaction);
     }
 
-    public List<Transaction> getAllTransactions() {
+    public List<TransactionEntity> getAllTransactions() {
         return transactionRepository.findAll();
     }
 }

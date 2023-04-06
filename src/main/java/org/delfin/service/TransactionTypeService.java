@@ -1,6 +1,6 @@
 package org.delfin.service;
 
-import org.delfin.model.TransactionType;
+import org.delfin.model.entity.TransactionTypeEntity;
 import org.delfin.repository.TransactionTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,20 +21,20 @@ public class TransactionTypeService {
         this.transactionTypeRepository = transactionTypeRepository;
     }
 
-    public List<TransactionType> findAll() {
+    public List<TransactionTypeEntity> findAll() {
         return transactionTypeRepository.findAll();
     }
 
-    public TransactionType findById(Long id) {
+    public TransactionTypeEntity findById(Long id) {
         return transactionTypeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Transaction Type not found with id: " + id));
     }
 
-    public TransactionType save(TransactionType transactionType) {
+    public TransactionTypeEntity save(TransactionTypeEntity transactionType) {
         return transactionTypeRepository.save(transactionType);
     }
 
-    public TransactionType update(TransactionType transactionType) {
+    public TransactionTypeEntity update(TransactionTypeEntity transactionType) {
         return transactionTypeRepository.save(transactionType);
     }
 

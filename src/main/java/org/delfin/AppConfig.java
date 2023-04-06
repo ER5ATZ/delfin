@@ -30,7 +30,7 @@ import java.util.Locale;
 @Configuration
 @ComponentScan(basePackages = "org.delfin")
 @EntityScan(basePackages = "org.delfin.model")
-@EnableJpaRepositories(basePackages = "org.delfin.repository")
+//@EnableJpaRepositories(basePackages = "org.delfin.repository")
 public class AppConfig {
 
     @Bean
@@ -41,12 +41,6 @@ public class AppConfig {
     }
 
     @Bean
-    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
-    }
-
-
-    @Bean
     public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory);
     }
@@ -55,28 +49,9 @@ public class AppConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        em.setPackagesToScan("org.delfin.model");
+        em.setPackagesToScan("org.delfin.model.entity");
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         return em;
-    }
-
-    @Bean
-    public AccountRepository accountRepository() {
-        return new AccountRepositoryImpl(jdbcTemplate(dataSource()));
-    }
-
-    @Bean
-    public CustomerRepository customerRepository() {
-        return new CustomerRepositoryImpl(jdbcTemplate(dataSource()));
-    }
-
-    @Bean
-    public TransactionRepository transactionRepository() {
-        return new TransactionRepositoryImpl(jdbcTemplate(dataSource()));
-    }
-
-    public TransactionTypeRepository transactionTypeRepository() {
-        return new TransactionTypeRepositoryImpl(jdbcTemplate(dataSource()));
     }
 
     @Bean

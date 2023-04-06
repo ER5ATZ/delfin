@@ -1,15 +1,17 @@
 package org.delfin.repository;
 
-import org.delfin.model.Account;
+import org.delfin.model.entity.AccountEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
  * @author Andreas Ersch <andreas.ersch@gmail.com>
  */
-@NoRepositoryBean
-public interface AccountRepository extends JpaRepository<Account, Long> {
-    List<Account> findByCustomerId(Long customerId);
+@Repository
+public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
+    @Query("SELECT a FROM AccountEntity a WHERE a.customer.id = ?1")
+    List<AccountEntity> findByCustomerId(Long customerId);
 }
