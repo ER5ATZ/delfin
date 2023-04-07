@@ -43,10 +43,10 @@ public class TransactionEntity {
     private BigDecimal newBalance;
 
     @Column(name = "transactiontime", nullable = false)
-    private LocalDateTime transactiontime;
+    private LocalDateTime transactionTime;
 
     @Column(name = "booked")
-    private Boolean booked;
+    private boolean booked;
 
     @Override
     public String toString() {
@@ -58,7 +58,7 @@ public class TransactionEntity {
                 ", amount=" + amount +
                 ", prevBalance=" + prevBalance +
                 ", newBalance=" + newBalance +
-                ", transactiontime=" + transactiontime +
+                ", transactiontime=" + transactionTime +
                 ", booked=" + booked +
                 '}';
     }

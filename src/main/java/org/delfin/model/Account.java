@@ -22,11 +22,11 @@ import java.time.LocalDateTime;
 public class Account {
 
     private Long id;
-    private Object customer;
-    private String currency;
-    private BigDecimal balance;
-    private BigDecimal accountLimit;
-    private LocalDateTime created;
+    private Object customer = 0L;
+    private String currency = Currency.EUR.code();
+    private BigDecimal balance = new BigDecimal(0);
+    private BigDecimal accountLimit = new BigDecimal(0);
+    private LocalDateTime created = LocalDateTime.MIN;
 
     public Account(AccountEntity accountEntity) {
         this.id = accountEntity.getId();
@@ -41,7 +41,7 @@ public class Account {
         AccountEntity accountEntity = new AccountEntity();
         accountEntity.setId(this.id);
         CustomerEntity customerEntity = new CustomerEntity();
-        customerEntity.setId((Long) this.customer);
+        customerEntity.setId((Long.valueOf(this.customer.toString())));
         accountEntity.setCustomer(customerEntity);
         accountEntity.setCurrency(this.currency);
         accountEntity.setBalance(this.balance);

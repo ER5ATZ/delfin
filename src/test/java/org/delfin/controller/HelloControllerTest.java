@@ -18,6 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DelfinIntegrationTest
 public class HelloControllerTest {
 
+    private String expected = "DEL/FINANZ TEST\rHello, Test!";
+
     @Value("${greeting.message}")
     private String greetingMessage;
 
@@ -29,6 +31,6 @@ public class HelloControllerTest {
         mockMvc.perform(get("/")
                         .contentType(MediaType.TEXT_PLAIN))
                 .andExpect(status().isOk())
-                .andExpect(content().string(greetingMessage));
+                .andExpect(content().string(expected));
     }
 }

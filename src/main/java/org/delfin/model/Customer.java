@@ -19,14 +19,14 @@ public class Customer {
     private Long id;
     private String firstName;
     private String lastName;
-    private Boolean active;
+    private boolean active;
     private LocalDateTime created;
 
     public Customer(CustomerEntity customerEntity) {
         this.id = customerEntity.getId();
         this.firstName = customerEntity.getFirstName();
         this.lastName = customerEntity.getLastName();
-        this.active = customerEntity.getActive();
+        this.active = customerEntity.isActive();
         this.created = customerEntity.getCreated();
     }
 

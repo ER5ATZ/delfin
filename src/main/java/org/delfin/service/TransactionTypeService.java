@@ -5,7 +5,6 @@ import org.delfin.repository.TransactionTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 /**
@@ -14,31 +13,38 @@ import java.util.List;
 @Service
 public class TransactionTypeService {
 
-    private TransactionTypeRepository transactionTypeRepository;
+    private static List<TransactionTypeEntity> transactionTypes;
+
+    private final TransactionTypeRepository transactionTypeRepository;
 
     @Autowired
     public TransactionTypeService(TransactionTypeRepository transactionTypeRepository) {
         this.transactionTypeRepository = transactionTypeRepository;
+        transactionTypes = findAll();
     }
 
     public List<TransactionTypeEntity> findAll() {
         return transactionTypeRepository.findAll();
     }
 
-    public TransactionTypeEntity findById(Long id) {
-        return transactionTypeRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Transaction Type not found with id: " + id));
-    }
+    public static TransactionTypeEntity getTransactionTypeByCalculationType(String calculation) {
+        for (TransactionTypeEntity tt : transactionTypes) {
+            if (tt.getCalculation().equals(calculation.toLowerCase())) {
+                return tt;
+            }
+        }
 
-    public TransactionTypeEntity save(TransactionTypeEntity transactionType) {
-        return transactionTypeRepository.save(transactionType);
+        // this should not happen
+        return new TransactionTypeEntity();
     }
+    public static TransactionTypeEntity getTransactionTypeById(long id) {
+        for (TransactionTypeEntity tt : transactionTypes) {
+            if (tt.getId() == id) {
+                return tt;
+            }
+        }
 
-    public TransactionTypeEntity update(TransactionTypeEntity transactionType) {
-        return transactionTypeRepository.save(transactionType);
-    }
-
-    public void deleteById(Long id) {
-        transactionTypeRepository.deleteById(id);
+        // this should not happen
+        return new TransactionTypeEntity();
     }
 }

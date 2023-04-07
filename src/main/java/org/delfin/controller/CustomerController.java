@@ -3,22 +3,19 @@ package org.delfin.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.delfin.constant.Endpoint;
 import org.delfin.exception.AccountNotFoundException;
 import org.delfin.exception.CustomerNotFoundException;
 import org.delfin.model.Account;
 import org.delfin.model.Customer;
-import org.delfin.model.entity.AccountEntity;
-import org.delfin.model.entity.CustomerEntity;
 import org.delfin.service.CustomerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,6 +24,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(Endpoint.CUSTOMER)
+@Tag(name = "CUSTOMER", description = "API for managing customers")
 public class CustomerController {
 
     private static final Logger LOG = LoggerFactory.getLogger(CustomerController.class);
@@ -39,7 +37,12 @@ public class CustomerController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Create customer", description = "Creates a new customer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Customer created"),
+            //@ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "500", description = "Internal error")
+    })
     public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
         LOG.info("Create customer: " + customer.toEntity().toString());
         try {
@@ -50,7 +53,7 @@ public class CustomerController {
         }
     }
 
-    @GetMapping("{id}")
+    @GetMapping(Endpoint.ID)
     @Operation(summary = "Get customer by ID", description = "Returns data for a single customer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Customer found"),
@@ -70,9 +73,15 @@ public class CustomerController {
         }
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody Customer updatedCustomer) {
-        LOG.debug("Attempt to update customer with ID " + id);
+    @PutMapping
+    @Operation(summary = "Update customer by ID", description = "Updates an existing customer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Customer updated"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "500", description = "Internal error")
+    })
+    public ResponseEntity<Customer> updateCustomer(@RequestBody Customer updatedCustomer) {
+        LOG.debug("Attempt to update customer with ID " + updatedCustomer);
         try {
             return ResponseEntity.ok(customerService.update(updatedCustomer));
         } catch (CustomerNotFoundException ex) {
@@ -83,7 +92,13 @@ public class CustomerController {
         }
     }
 
-    @GetMapping("{id}/accounts")
+    @GetMapping(Endpoint.ACCOUNTS)
+    @Operation(summary = "Get accounts for customer by ID", description = "Returns a list of accounts for a customer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Accounts found"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "500", description = "Internal error")
+    })
     public ResponseEntity<List<Account>> getAccountsForCustomer(@PathVariable Long id) {
         LOG.info("Requested accounts for customerID " + id);
         try {
@@ -99,4 +114,3 @@ public class CustomerController {
         }
     }
 }
-

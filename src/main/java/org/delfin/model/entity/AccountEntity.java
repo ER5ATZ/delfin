@@ -37,7 +37,7 @@ public class AccountEntity {
     private BigDecimal accountLimit;
 
     @Column(name = "active")
-    private Boolean active;
+    private boolean active;
 
     @Column(name = "created", nullable = false)
     private LocalDateTime created;

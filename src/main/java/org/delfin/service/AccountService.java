@@ -1,5 +1,6 @@
 package org.delfin.service;
 
+import org.delfin.exception.AccountExistsException;
 import org.delfin.exception.AccountNotFoundException;
 import org.delfin.exception.CustomerNotFoundException;
 import org.delfin.model.Account;
@@ -13,6 +14,8 @@ import org.delfin.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.security.auth.login.AccountException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +26,9 @@ import java.util.Optional;
  */
 @Service
 public class AccountService {
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
     private final CustomerRepository customerRepository;
-    private TransactionRepository transactionRepository;
+    private final TransactionRepository transactionRepository;
 
     @Autowired
     public AccountService(AccountRepository accountRepository, TransactionRepository transactionRepository,
@@ -40,27 +43,45 @@ public class AccountService {
     }
 
     private AccountEntity findEntityById(Long id) throws AccountNotFoundException {
-        return accountRepository.findById(id)
+        if (id == null) throw new AccountNotFoundException(0L);
+        return accountRepository.findActiveById(id)
                 .orElseThrow(() -> new AccountNotFoundException(id));
     }
 
-    public Account save(Account account) {
-        AccountEntity entity = account.toEntity();
-        entity.setCreated(LocalDateTime.now());
-        return new Account(saveEntity(entity));
+    public Account save(Account account) throws AccountExistsException, CustomerNotFoundException {
+        try {
+            findEntityById(account.getId());
+        } catch (AccountNotFoundException ex) {
+            Long cid = Long.valueOf(account.getCustomer().toString());
+            AccountEntity entity = account.toEntity();
+            CustomerEntity customer = customerRepository
+                    .findById(cid).orElseThrow((() -> new CustomerNotFoundException(cid)));
+            entity.setCustomer(customer);
+            entity.setActive(true);
+            entity.setCreated(LocalDateTime.now());
+            entity.setUpdated(entity.getCreated());
+            return new Account(saveEntity(entity));
+        }
+
+        throw new AccountExistsException(account);
     }
 
-    private AccountEntity saveEntity(AccountEntity account) {
-        return accountRepository.save(account);
+    private AccountEntity saveEntity(AccountEntity entity) {
+        return accountRepository.save(entity);
     }
 
-    public Account update(Account account) throws Exception {
-        // TODO needs different degrees of rights on who may or may not updte what
+    public Account update(Account account) throws AccountNotFoundException, CustomerNotFoundException {
+        // TODO needs different degrees of rights on who may or may not update specific fields
         AccountEntity entity = findEntityById(account.getId());
         entity.setAccountLimit(account.getAccountLimit());
-        Long cid = (Long) account.getCustomer();
-        CustomerEntity customer = customerRepository.findById(cid).orElseThrow((() -> new CustomerNotFoundException(cid)));
-        entity.setCustomer(customer);
+        Long cid = Long.valueOf(account.getCustomer().toString());
+        CustomerEntity customer = customerRepository.findById(cid)
+                .orElseThrow((() -> new CustomerNotFoundException(cid)));
+        if (!customer.getId().equals(entity.getCustomer().getId())) {
+            //Should customer be updated at all via API?
+            //entity.setCustomer(customer);
+            throw new CustomerNotFoundException(0L);
+        }
         entity.setUpdated(LocalDateTime.now());
         return new Account(saveEntity(entity));
     }

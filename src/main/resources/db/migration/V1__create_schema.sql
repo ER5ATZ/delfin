@@ -7,6 +7,9 @@ CREATE TABLE customer (
   updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE SEQUENCE customer_id_seq;
+ALTER TABLE customer ALTER COLUMN id SET DEFAULT nextval('customer_id_seq');
+
 CREATE TABLE account (
   id BIGINT NOT NULL PRIMARY KEY,
   customerid BIGINT NOT NULL,
@@ -19,11 +22,21 @@ CREATE TABLE account (
   FOREIGN KEY (customerid) REFERENCES customer(id)
 );
 
+CREATE SEQUENCE account_id_seq;
+ALTER TABLE account ALTER COLUMN id SET DEFAULT nextval('account_id_seq');
+
 CREATE TABLE transactiontype (
   id BIGINT NOT NULL PRIMARY KEY,
   typename VARCHAR(255) NOT NULL,
-  calculationmethod CHAR(1) NOT NULL
+  calculation CHAR(8) NOT NULL
 );
+
+CREATE SEQUENCE transactiontype_id_seq;
+INSERT INTO transactiontype (id, typename, calculation) VALUES
+  (1, 'DEPOSIT', 'positive'),
+  (2, 'WITHDRAWAL', 'negative'),
+  (3, 'BALANCE', 'neutral');
+--ALTER TABLE transactiontype ALTER COLUMN id SET DEFAULT nextval('transactiontype_id_seq');
 
 CREATE TABLE transaction (
   id BIGINT NOT NULL PRIMARY KEY,
@@ -39,7 +52,5 @@ CREATE TABLE transaction (
   FOREIGN KEY (transactiontypeid) REFERENCES transactiontype(id)
 );
 
-INSERT INTO transactiontype (id, typename, calculationmethod) VALUES
-  (1, 'DEPOSIT', '+'),
-  (2, 'WITHDRAWAL', '-'),
-  (3, 'BALANCE', '');
+CREATE SEQUENCE transaction_id_seq;
+ALTER TABLE transaction ALTER COLUMN id SET DEFAULT nextval('transaction_id_seq');

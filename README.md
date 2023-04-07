@@ -1,7 +1,7 @@
-# Del+ Finance System
-This is a sample application for managing customer accounts. It allows users to create, update, and delete customer and account information.
+# Del/Finanz System
+This is a simple application for managing customer accounts. It allows users to create, update, and delete customer and account information and add and view transactions.
 
-##Prerequisites
+## Prerequisites
 To run this application, you'll need the following:
 
 * Java 8 or higher
@@ -10,7 +10,7 @@ To run this application, you'll need the following:
 ## Getting Started
 ### Clone the repository:
 ```bash 
-git clone https://github.com/[ER5ATZ]/[delfin].git
+git clone https://github.com/ER5ATZ/delfin.git
 ```
 
 ### Create a database and update the application.properties file with the database URL, username, and password:
@@ -28,36 +28,37 @@ Open the application in your browser at http://localhost:8080.
 
 
 ## Usage Customer API
-### GET /api/customers
-Retrieves a list of all customers.
-
-### GET /api/customers/{id}
+### GET /api/customer/{id}
 Retrieves a customer by ID.
 
-### POST /api/customers
+### POST /api/customer/
 Creates a new customer.
 
 ### PUT /api/customers/{id}
 Updates a customer by ID.
 
-### DELETE /api/customers/{id}
+### DELETE /api/customer/{id}
 Deletes a customer by ID.
 
 ## Account API
-### GET /api/accounts
-Retrieves a list of all accounts.
-
-### GET /api/accounts/{id}
+### GET /api/account/{id}
 Retrieves an account by ID.
 
-### POST /api/accounts
+### POST /api/account/
 Creates a new account.
 
-### PUT /api/accounts/{id}
+### PUT /api/account/{id}
 Updates an account by ID.
 
-### DELETE /api/accounts/{id}
+### DELETE /api/account/{id}
 Deletes an account by ID.
+
+## Transaction API
+### POST /api/transaction/
+Generates a new transaction.
+
+### GET /api/transaction/{id}
+Retrieves a transaction by ID.
 
 ## Technologies Used
 * Java 8

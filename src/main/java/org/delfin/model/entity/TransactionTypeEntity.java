@@ -27,8 +27,8 @@ public class TransactionTypeEntity {
     @Column(name = "typename")
     private String typeName;
 
-    @Column(name = "calculationmethod")
-    private String calculationMethod;
+    @Column(name = "calculation")
+    private String calculation;
 
     @Override
     public boolean equals(Object o) {
@@ -36,12 +36,12 @@ public class TransactionTypeEntity {
         if (o == null || getClass() != o.getClass()) return false;
         TransactionTypeEntity that = (TransactionTypeEntity) o;
         return Objects.equals(typeName, that.typeName) &&
-                Objects.equals(calculationMethod, that.calculationMethod);
+                Objects.equals(calculation, that.calculation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(typeName, calculationMethod);
+        return Objects.hash(typeName, calculation);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class TransactionTypeEntity {
         return "TransactionType{" +
                 "id=" + id +
                 ", typeName='" + typeName + '\'' +
-                ", calculationMethod='" + calculationMethod + '\'' +
+                ", calculation='" + calculation + '\'' +
                 '}';
     }
 }

@@ -20,9 +20,9 @@ import java.util.List;
 @Service
 public class TransactionService {
 
-    private TransactionRepository transactionRepository;
+    private final TransactionRepository transactionRepository;
 
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
     @Autowired
     public TransactionService(TransactionRepository transactionRepository, AccountRepository accountRepository) {
@@ -31,15 +31,15 @@ public class TransactionService {
     }
 
     public Transaction createTransaction(Transaction transaction) throws AccountNotFoundException, TransactionExceedsLimitException {
-        Long accountId = (Long) transaction.getAccount();
+        Long accountId = Long.valueOf(transaction.getAccount().toString());
         AccountEntity account = accountRepository.findById(accountId)
                 .orElseThrow(()-> new AccountNotFoundException(accountId));
-        TransactionEntity entity = TransactionLogic.calculateNewBalance(
+        TransactionEntity entity = TransactionLogic.verifyTransaction(
                 account.getAccountLimit(),
                 account.getBalance(),
                 transaction
         );
-
+        entity.setAccount(account);
         transactionRepository.save(entity);
         account.setBalance(entity.getNewBalance());
         accountRepository.save(account);

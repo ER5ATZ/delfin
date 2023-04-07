@@ -29,7 +29,7 @@ public class CustomerEntity {
     private String lastName;
 
     @Column(name = "active")
-    private Boolean active;
+    private boolean active;
 
     @Column(name = "created")
     private LocalDateTime created;

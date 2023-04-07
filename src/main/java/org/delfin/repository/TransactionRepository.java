@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends JpaRepository<TransactionEntity, Long> {
     @Deprecated
-    @Query("SELECT t FROM TransactionEntity t WHERE t.account.id = ?1 ORDER BY t.transactiontime DESC")
+    @Query("SELECT t FROM TransactionEntity t WHERE t.account.id = ?1 ORDER BY t.transactionTime DESC")
     List<TransactionEntity> findByAccountId(Long accountId);
 
     @Modifying

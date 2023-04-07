@@ -1,6 +1,5 @@
 package org.delfin.service;
 
-import org.delfin.exception.AccountNotFoundException;
 import org.delfin.exception.CustomerNotFoundException;
 import org.delfin.model.Account;
 import org.delfin.model.Customer;
@@ -22,18 +21,14 @@ import java.util.Optional;
 @Service
 public class CustomerService {
 
-    private CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
 
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
     @Autowired
     public CustomerService(CustomerRepository customerRepository, AccountRepository accountRepository) {
         this.customerRepository = customerRepository;
         this.accountRepository = accountRepository;
-    }
-
-    public List<CustomerEntity> findAll() {
-        return customerRepository.findAll();
     }
 
     public Customer findById(Long id) throws CustomerNotFoundException {
@@ -48,6 +43,7 @@ public class CustomerService {
     public Customer save(Customer customer) throws RuntimeException {
         CustomerEntity entity = customer.toEntity();
         entity.setCreated(LocalDateTime.now());
+        entity.setUpdated(entity.getCreated());
         return new Customer(customerRepository.save(entity));
     }
 
@@ -55,26 +51,26 @@ public class CustomerService {
         CustomerEntity entity = findEntityById(customer.getId());
         entity.setFirstName(customer.getFirstName());
         entity.setLastName(customer.getLastName());
+        entity.setActive(customer.isActive());
         entity.setUpdated(LocalDateTime.now());
         return new Customer(customerRepository.save(entity));
     }
 
-    public void deleteById(Long id) {
-
-    }
-
     public Account createAccountForCustomer(Long customerId, Account account) throws CustomerNotFoundException {
         Optional<CustomerEntity> customer = customerRepository.findById(customerId);
-        if (customer.isPresent()) {
-            AccountEntity entity = account.toEntity();
-            entity.setCustomer(customer.get());
-            return new Account(accountRepository.save(entity));
-        } else {
+        if (!customer.isPresent()) {
             throw new CustomerNotFoundException(customerId);
         }
+        AccountEntity entity = account.toEntity();
+        entity.setCustomer(customer.get());
+        return new Account(accountRepository.save(entity));
     }
 
-    public List<Account> getAccountsForCustomer(Long customerId) throws CustomerNotFoundException, AccountNotFoundException {
+    public List<Account> getAccountsForCustomer(Long customerId) throws CustomerNotFoundException {
+        Optional<CustomerEntity> customer = customerRepository.findById(customerId);
+        if (!customer.isPresent()) {
+            throw new CustomerNotFoundException(customerId);
+        }
         List<Account> accounts = new ArrayList<>();
         for (AccountEntity entity : accountRepository.findByCustomerId(customerId)) {
             accounts.add(new Account(entity));
