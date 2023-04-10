@@ -34,7 +34,7 @@ Retrieves a customer by ID.
 ### POST /api/customer/
 Creates a new customer.
 
-### PUT /api/customers/{id}
+### PUT /api/customers/
 Updates a customer by ID.
 
 ### DELETE /api/customer/{id}
@@ -47,7 +47,7 @@ Retrieves an account by ID.
 ### POST /api/account/
 Creates a new account.
 
-### PUT /api/account/{id}
+### PUT /api/account/
 Updates an account by ID.
 
 ### DELETE /api/account/{id}

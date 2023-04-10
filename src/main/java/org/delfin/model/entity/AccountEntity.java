@@ -4,58 +4,44 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.delfin.model.Currency;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * @author Andreas Ersch <andreas.ersch@gmail.com>
  */
 @Entity
-@Table(name = "account")
+@Table(name = "accounts")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class AccountEntity extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customerid", nullable = false)
     private CustomerEntity customer;
-
-    @Column(name = "currency", nullable = false)
-    private String currency;
-
-    @Column(name = "balance", nullable = false)
-    private BigDecimal balance;
-
+    @Column(nullable = false)
+    private String currency = Currency.USD.code();
+    @Column(nullable = false)
+    private BigDecimal balance = new BigDecimal(0);
     @Column(name = "accountlimit", nullable = false)
-    private BigDecimal accountLimit;
-
-    @Column(name = "active")
-    private boolean active;
-
-    @Column(name = "created", nullable = false)
-    private LocalDateTime created;
-
-    @Column(name = "updated", nullable = false)
-    private LocalDateTime updated;
+    private BigDecimal accountLimit = new BigDecimal(0);
+    @Column(nullable = false)
+    private boolean active = true;
 
     @Override
     public String toString() {
         return "Account{" +
-                "id=" + id +
-                ", customerId=" + customer.getId() +
-                ", currency='" + currency + '\'' +
-                ", balance=" + balance +
-                ", accountLimit=" + accountLimit +
-                ", active=" + active +
-                ", created=" + created +
-                ", updated=" + updated +
+                "id=" + getId() +
+                ", customerId=" + getCustomer().getId() +
+                ", currency='" + getCurrency() + '\'' +
+                ", balance=" + getBalance() +
+                ", accountLimit=" + getAccountLimit() +
+                ", active=" + isActive() +
+                ", created=" + getCreated() +
+                ", updated=" + getUpdated() +
                 '}';
     }
 }

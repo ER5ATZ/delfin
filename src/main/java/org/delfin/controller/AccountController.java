@@ -10,17 +10,13 @@ import org.delfin.exception.AccountNotFoundException;
 import org.delfin.exception.CustomerNotFoundException;
 import org.delfin.model.Account;
 import org.delfin.model.Transaction;
-import org.delfin.model.entity.AccountEntity;
-import org.delfin.model.entity.TransactionEntity;
 import org.delfin.service.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**

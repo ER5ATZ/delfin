@@ -13,28 +13,25 @@ import javax.persistence.Table;
  * @author Andreas Ersch <andreas.ersch@gmail.com>
  */
 @Entity
-@Table(name = "currencies")
+@Table(name = "countries")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CurrencyEntity extends AbstractEntity {
+public class CountryEntity extends AbstractEntity {
+    @Column(nullable = false)
+    private String name;
     @Column(nullable = false)
     private String code;
-    @Column
-    private String symbol;
-    @Column
-    private String description;
 
     @Override
     public String toString() {
-        return "Customer{" +
-                " id=" + getId() +
-                ", code='" + getCode() + '\'' +
-                ", description='" + getDescription() + '\'' +
-                ", symbol=" + getSymbol() +
+        return "Country{" +
+                "id=" + getId() +
+                ", balance=" + getName() +
+                ", active=" + getCode() +
                 ", created=" + getCreated() +
                 ", updated=" + getUpdated() +
-                " }";
+                '}';
     }
 }

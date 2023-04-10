@@ -1,6 +1,6 @@
 package org.delfin.service;
 
-import org.delfin.TransactionLogic;
+import org.delfin.utils.TransactionUtils;
 import org.delfin.exception.AccountNotFoundException;
 import org.delfin.exception.TransactionExceedsLimitException;
 import org.delfin.exception.TransactionNotFoundException;
@@ -34,7 +34,7 @@ public class TransactionService {
         Long accountId = Long.valueOf(transaction.getAccount().toString());
         AccountEntity account = accountRepository.findById(accountId)
                 .orElseThrow(()-> new AccountNotFoundException(accountId));
-        TransactionEntity entity = TransactionLogic.verifyTransaction(
+        TransactionEntity entity = TransactionUtils.verifyTransaction(
                 account.getAccountLimit(),
                 account.getBalance(),
                 transaction

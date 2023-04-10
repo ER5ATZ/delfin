@@ -13,20 +13,14 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "transactiontype")
+@Table(name = "transactiontypes")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionTypeEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class TransactionTypeEntity extends AbstractEntity {
     @Column(name = "typename")
     private String typeName;
-
     @Column(name = "calculation")
     private String calculation;
 
@@ -47,9 +41,9 @@ public class TransactionTypeEntity {
     @Override
     public String toString() {
         return "TransactionType{" +
-                "id=" + id +
-                ", typeName='" + typeName + '\'' +
-                ", calculation='" + calculation + '\'' +
+                "id=" + getId() +
+                ", typeName='" + getTypeName() +
+                ", calculation='" + getCalculation() +
                 '}';
     }
 }

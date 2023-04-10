@@ -89,7 +89,7 @@ public class TransactionControllerTest {
         assertEquals(Endpoint.ACCOUNT + 2, getObjectLink(result.getAccount()));
         assertEquals(new BigDecimal("500.00"), result.getAmount());
         assertEquals(CalculationType.POSITIVE, result.getTransactionType());
-        assertNotNull(result.getTransactiontime());
+        assertNotNull(result.getTransactionTime());
         assertEquals(new BigDecimal("500.00"), result.getPrevBalance());
         assertEquals(new BigDecimal("1000.00"), result.getNewBalance());
         assertTrue(result.isBooked());

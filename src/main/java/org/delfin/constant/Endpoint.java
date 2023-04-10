@@ -11,4 +11,5 @@ public class Endpoint {
     public static final String CUSTOMER = API + "customer/";
     public static final String TRANSACTION = API + "transaction/";
     public static final String TRANSACTIONS = ID + "/transactions";
+    public static final String USER = API + "user/";
 }

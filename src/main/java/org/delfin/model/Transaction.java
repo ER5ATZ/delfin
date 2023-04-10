@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Transaction {
-
     private Long id;
     private Object account;
     private String externalId;
@@ -30,7 +29,7 @@ public class Transaction {
     private BigDecimal amount;
     private BigDecimal prevBalance;
     private BigDecimal newBalance;
-    private LocalDateTime transactiontime;
+    private LocalDateTime transactionTime;
     private boolean booked;
 
     public Transaction(TransactionEntity transactionEntity) {
@@ -42,24 +41,25 @@ public class Transaction {
         this.amount = transactionEntity.getAmount();
         this.prevBalance = transactionEntity.getPrevBalance();
         this.newBalance = transactionEntity.getNewBalance();
-        this.transactiontime = transactionEntity.getTransactionTime();
+        this.transactionTime = transactionEntity.getTransactionTime();
         this.booked = transactionEntity.isBooked();
     }
 
     public TransactionEntity toEntity() {
         TransactionEntity transactionEntity = new TransactionEntity();
-        transactionEntity.setId(this.id);
+        //TODO should be an accountnumber String
+        transactionEntity.setId(getId());
         AccountEntity accountEntity = new AccountEntity();
-        accountEntity.setId((Long) this.account);
+        accountEntity.setId((Long) getAccount());
         transactionEntity.setAccount(accountEntity);
-        transactionEntity.setExternalId(this.externalId);
-        TransactionTypeEntity tt = TransactionTypeService.getTransactionTypeByCalculationType(this.transactionType.toString());
+        transactionEntity.setExternalId(getExternalId());
+        TransactionTypeEntity tt = TransactionTypeService.getTransactionTypeByCalculationType(getTransactionTime().toString());
         transactionEntity.setTransactionTypeId(tt.getId());
-        transactionEntity.setAmount(this.amount);
-        transactionEntity.setPrevBalance(this.prevBalance);
-        transactionEntity.setNewBalance(this.newBalance);
-        transactionEntity.setTransactionTime(this.transactiontime);
-        transactionEntity.setBooked(this.booked);
+        transactionEntity.setAmount(getAmount());
+        transactionEntity.setPrevBalance(getPrevBalance());
+        transactionEntity.setNewBalance(getNewBalance());
+        transactionEntity.setTransactionTime(getTransactionTime());
+        transactionEntity.setBooked(isBooked());
         return transactionEntity;
     }
 }

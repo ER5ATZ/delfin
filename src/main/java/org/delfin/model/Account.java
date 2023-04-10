@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Account {
-
     private Long id;
     private Object customer = 0L;
     private String currency = Currency.EUR.code();
@@ -39,14 +38,13 @@ public class Account {
 
     public AccountEntity toEntity() {
         AccountEntity accountEntity = new AccountEntity();
-        accountEntity.setId(this.id);
+        accountEntity.setId(getId());
         CustomerEntity customerEntity = new CustomerEntity();
-        customerEntity.setId((Long.valueOf(this.customer.toString())));
+        customerEntity.setId((Long.valueOf(getCustomer().toString())));
         accountEntity.setCustomer(customerEntity);
-        accountEntity.setCurrency(this.currency);
-        accountEntity.setBalance(this.balance);
-        accountEntity.setAccountLimit(this.accountLimit);
-        accountEntity.setCreated(this.created);
+        accountEntity.setCurrency(getCurrency());
+        accountEntity.setBalance(getBalance());
+        accountEntity.setAccountLimit(getAccountLimit());
         return accountEntity;
     }
 }

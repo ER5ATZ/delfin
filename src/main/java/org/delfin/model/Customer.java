@@ -32,11 +32,10 @@ public class Customer {
 
     public CustomerEntity toEntity() {
         CustomerEntity customerEntity = new CustomerEntity();
-        customerEntity.setId(this.id);
-        customerEntity.setFirstName(this.firstName);
-        customerEntity.setLastName(this.lastName);
-        customerEntity.setActive(this.active);
-        customerEntity.setCreated(this.created);
+        customerEntity.setId(getId());
+        customerEntity.setFirstName(getFirstName());
+        customerEntity.setLastName(getLastName());
+        customerEntity.setActive(isActive());
         return customerEntity;
     }
 }

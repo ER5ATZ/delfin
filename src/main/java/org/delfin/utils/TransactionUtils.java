@@ -1,4 +1,4 @@
-package org.delfin;
+package org.delfin.utils;
 
 import org.delfin.exception.TransactionExceedsLimitException;
 import org.delfin.model.Transaction;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 /**
 * @author Andreas Ersch <andreas.ersch@gmail.com>
-*/public class TransactionLogic {
+*/public class TransactionUtils {
     public static TransactionEntity verifyTransaction(
             BigDecimal accountLimit,
             BigDecimal balance,
