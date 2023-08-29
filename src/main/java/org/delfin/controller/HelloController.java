@@ -38,7 +38,7 @@ public class HelloController {
         } catch (IOException e) {
             LOG.warn("Banner content could not be loaded.");
         }
-        return banner + greetingMessage;
+        return "<pre>" + banner + "</pre>" + greetingMessage;
     }
 
     private String getBanner() throws IOException {

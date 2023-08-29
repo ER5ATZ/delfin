@@ -9,6 +9,7 @@ import org.delfin.constant.Endpoint;
 import org.delfin.model.Account;
 import org.delfin.model.Currency;
 import org.delfin.model.Transaction;
+import org.delfin.model.entity.AccountEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
@@ -109,7 +110,7 @@ public class AccountControllerTest {
     @Test
     public void createAccount_returnsBadRequestForInvalidCustomerId() throws Exception {
         // Create the request body for the account
-        Account request = new Account();
+        Account request = new Account(new AccountEntity());
         request.setCustomer(Long.MAX_VALUE);
         request.setAccountLimit(BigDecimal.ONE);
 
@@ -126,7 +127,7 @@ public class AccountControllerTest {
     @Test
     public void createAccount_returnsValidAccountForValidCustomerId() throws Exception {
         // Create the request body for the account
-        Account request = new Account();
+        Account request = new Account(new AccountEntity());
         request.setCustomer(3L);
         request.setCurrency(Currency.USD.code());
         request.setBalance(new BigDecimal(1000));
@@ -155,7 +156,7 @@ public class AccountControllerTest {
     @Test
     public void updateAccount_returnsBadRequestForInvalidAccountId() throws Exception {
         // Create the request body for the account
-        Account request = new Account();
+        Account request = new Account(new AccountEntity());
         request.setCustomer(Long.MAX_VALUE);
 
         // Convert the request body to JSON
@@ -223,7 +224,7 @@ public class AccountControllerTest {
     @Test
     public void deleteAccount_returnsSuccess() throws Exception {
         // Create the request body for the account
-        Account request = new Account();
+        Account request = new Account(new AccountEntity());
         request.setCustomer(3L);
         request.setCurrency(Currency.EUR.code());
         request.setBalance(new BigDecimal(0));

@@ -1,6 +1,8 @@
 <configuration>
+    <property resource="logback-properties.xml" />
+
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>/deve/logs/delfin-test.log</file>
+        <file>${APP_LOGS_PATH:-/Users/Shared/Logs}/delfin-test.log</file>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>

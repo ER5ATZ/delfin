@@ -1,0 +1,3 @@
+<configuration>
+    <property name="APP_LOGS_PATH" value="${APP_LOGS_PATH:-/Users/Shared/Logs}" />
+</configuration>

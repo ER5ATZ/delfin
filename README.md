@@ -20,6 +20,14 @@ spring.datasource.username=[username]
 spring.datasource.password=[password]
 ```
 
+
+### Create a folder for logs (if it does not exist already) and add it as an environment variable:
+```bash
+echo 'export APP_LOGS_PATH="/Users/Shared/Logs"' >> ~/.bash_profile
+source ~/.bash_profile
+```
+
+
 ### Run the application:
 ```bash
 mvn spring-boot:run

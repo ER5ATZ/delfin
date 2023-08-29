@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
-
-    RoleEntity findByRolename(String Rolename);
+    //RoleEntity findByRoleName(String roleName);
 
 }
