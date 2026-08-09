@@ -14,6 +14,7 @@ import org.delfin.service.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,14 +40,14 @@ public class AccountController {
     @PostMapping
     @Operation(summary = "Create account", description = "Creates a new account")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Account created"),
+            @ApiResponse(responseCode = "201", description = "Account created"),
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "500", description = "Internal error")
     })
     public ResponseEntity<Account> createAccount(@RequestBody Account account) {
         LOG.info("Create account: " + account.toString());
         try {
-            return ResponseEntity.ok(accountService.save(account));
+            return ResponseEntity.status(HttpStatus.CREATED).body(accountService.save(account));
         } catch (AccountExistsException | CustomerNotFoundException e) {
             return ResponseEntity.badRequest().build();
         } catch (Exception ex) {
@@ -96,7 +97,7 @@ public class AccountController {
     }
 
     @DeleteMapping(Endpoint.ID)
-    @Operation(summary = "Get accounts for customer by ID", description = "Returns a list of accounts for a customer")
+    @Operation(summary = "Delete account", description = "Deactivates an account by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Account deactivated"),
             @ApiResponse(responseCode = "400", description = "Invalid request"),

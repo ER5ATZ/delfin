@@ -5,9 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /**
  * @author Andreas Ersch <andreas.ersch@gmail.com>
@@ -20,7 +20,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 public class RoleMappingEntity extends AbstractEntity {
     @Column
-    private String userId;
+    private Long userId;
     @Column
     private String roleName;
 }

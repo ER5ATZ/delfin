@@ -4,22 +4,22 @@ import org.delfin.exception.AccountExistsException;
 import org.delfin.exception.AccountNotFoundException;
 import org.delfin.exception.CustomerNotFoundException;
 import org.delfin.model.Account;
+import org.delfin.model.CalculationType;
 import org.delfin.model.Transaction;
 import org.delfin.model.entity.AccountEntity;
 import org.delfin.model.entity.CustomerEntity;
 import org.delfin.model.entity.TransactionEntity;
+import org.delfin.model.entity.TransactionTypeEntity;
 import org.delfin.repository.AccountRepository;
 import org.delfin.repository.CustomerRepository;
 import org.delfin.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.security.auth.login.AccountException;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author Andreas Ersch <andreas.ersch@gmail.com>
@@ -49,21 +49,17 @@ public class AccountService {
     }
 
     public Account save(Account account) throws AccountExistsException, CustomerNotFoundException {
-        try {
-            findEntityById(account.getId());
-        } catch (AccountNotFoundException ex) {
-            Long cid = Long.valueOf(account.getCustomer().toString());
-            AccountEntity entity = account.toEntity();
-            CustomerEntity customer = customerRepository
-                    .findById(cid).orElseThrow((() -> new CustomerNotFoundException(cid)));
-            entity.setCustomer(customer);
-            entity.setActive(true);
-            entity.setCreated(LocalDateTime.now());
-            entity.setUpdated(entity.getCreated());
-            return new Account(saveEntity(entity));
+        if (account.getId() != null && accountRepository.existsById(account.getId())) {
+            throw new AccountExistsException(account);
         }
-
-        throw new AccountExistsException(account);
+        Long cid = Long.valueOf(account.getCustomer().toString());
+        AccountEntity entity = account.toEntity();
+        CustomerEntity customer = customerRepository
+                .findById(cid).orElseThrow((() -> new CustomerNotFoundException(cid)));
+        entity.setCustomer(customer);
+        entity.setActive(true);
+        entity.setAccountNumber(account.getCurrency() + "-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        return new Account(saveEntity(entity));
     }
 
     private AccountEntity saveEntity(AccountEntity entity) {
@@ -82,7 +78,6 @@ public class AccountService {
             //entity.setCustomer(customer);
             throw new CustomerNotFoundException(0L);
         }
-        entity.setUpdated(LocalDateTime.now());
         return new Account(saveEntity(entity));
     }
 
@@ -92,7 +87,8 @@ public class AccountService {
             List<Transaction> transactions = new ArrayList<>();
             // TODO use instead transactionRepository.findByAccountId(accountId, limit);
             for (TransactionEntity entity : transactionRepository.findByAccountId(accountId)) {
-                transactions.add(new Transaction(entity));
+                TransactionTypeEntity tt = TransactionTypeService.getTransactionTypeById(entity.getTransactionTypeId());
+                transactions.add(new Transaction(entity, CalculationType.of(tt.getCalculation())));
             }
             return transactions;
         } else {
@@ -103,7 +99,6 @@ public class AccountService {
     public void deleteById(Long id) {
         AccountEntity toDelete = findEntityById(id);
         toDelete.setActive(false);
-        toDelete.setUpdated(LocalDateTime.now());
         saveEntity(toDelete);
     }
 }

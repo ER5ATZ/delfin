@@ -78,7 +78,7 @@ public class TransactionControllerTest {
         MvcResult mvcResult = mockMvc.perform(post(URI)
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
 
         // Convert response body to Transaction

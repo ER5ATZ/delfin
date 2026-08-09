@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DelfinIntegrationTest
 public class HelloControllerTest {
 
-    private String expected = "DEL/FINANZ TEST\rHello, Test!";
+    private String expected = "<pre>DEL/FINANZ TEST</pre>\rHello, Test!";
 
     @Value("${greeting.message}")
     private String greetingMessage;

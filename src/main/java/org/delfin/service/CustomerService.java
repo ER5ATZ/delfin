@@ -10,7 +10,6 @@ import org.delfin.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -42,8 +41,6 @@ public class CustomerService {
 
     public Customer save(Customer customer) throws RuntimeException {
         CustomerEntity entity = customer.toEntity();
-        entity.setCreated(LocalDateTime.now());
-        entity.setUpdated(entity.getCreated());
         return new Customer(customerRepository.save(entity));
     }
 
@@ -52,7 +49,6 @@ public class CustomerService {
         entity.setFirstName(customer.getFirstName());
         entity.setLastName(customer.getLastName());
         entity.setActive(customer.isActive());
-        entity.setUpdated(LocalDateTime.now());
         return new Customer(customerRepository.save(entity));
     }
 

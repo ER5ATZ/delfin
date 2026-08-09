@@ -4,9 +4,11 @@ import org.delfin.utils.TransactionUtils;
 import org.delfin.exception.AccountNotFoundException;
 import org.delfin.exception.TransactionExceedsLimitException;
 import org.delfin.exception.TransactionNotFoundException;
+import org.delfin.model.CalculationType;
 import org.delfin.model.Transaction;
 import org.delfin.model.entity.AccountEntity;
 import org.delfin.model.entity.TransactionEntity;
+import org.delfin.model.entity.TransactionTypeEntity;
 import org.delfin.repository.AccountRepository;
 import org.delfin.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +45,8 @@ public class TransactionService {
         transactionRepository.save(entity);
         account.setBalance(entity.getNewBalance());
         accountRepository.save(account);
-        return new Transaction(entity);
+        TransactionTypeEntity tt = TransactionTypeService.getTransactionTypeById(entity.getTransactionTypeId());
+        return new Transaction(entity, CalculationType.of(tt.getCalculation()));
     }
 
     public List<TransactionEntity> getTransactionsForAccount(Long accountId) {
@@ -51,7 +54,9 @@ public class TransactionService {
     }
 
     public Transaction findById(Long id) throws TransactionNotFoundException {
-        return new Transaction(transactionRepository.findById(id).orElseThrow(() -> new TransactionNotFoundException(id)));
+        TransactionEntity entity = transactionRepository.findById(id).orElseThrow(() -> new TransactionNotFoundException(id));
+        TransactionTypeEntity tt = TransactionTypeService.getTransactionTypeById(entity.getTransactionTypeId());
+        return new Transaction(entity, CalculationType.of(tt.getCalculation()));
     }
 
     public TransactionEntity save(TransactionEntity transaction) {

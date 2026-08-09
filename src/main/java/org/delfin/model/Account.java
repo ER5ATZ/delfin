@@ -21,6 +21,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Account {
     private Long id;
+    /**
+     * Typed as Object for HATEOAS support: holds a Long (customer ID) on input,
+     * or a {@link Link} (HATEOAS link to customer resource) on output.
+     */
     private Object customer = 0L;
     private String currency = Currency.EUR.code();
     private BigDecimal balance = new BigDecimal(0);
@@ -29,7 +33,9 @@ public class Account {
 
     public Account(AccountEntity accountEntity) {
         this.id = accountEntity.getId();
-        this.customer = Link.of(Endpoint.CUSTOMER + accountEntity.getCustomer().getId());
+        if (accountEntity.getCustomer() != null) {
+            this.customer = Link.of(Endpoint.CUSTOMER + accountEntity.getCustomer().getId());
+        }
         this.currency = accountEntity.getCurrency();
         this.balance = accountEntity.getBalance();
         this.accountLimit = accountEntity.getAccountLimit();

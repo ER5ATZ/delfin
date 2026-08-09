@@ -140,7 +140,7 @@ public class AccountControllerTest {
         MvcResult mvcResult = mockMvc.perform(post(URI)
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
 
         // Convert response body to Account
@@ -237,7 +237,7 @@ public class AccountControllerTest {
         MvcResult mvcResult = mockMvc.perform(post(URI)
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
 
         // Convert response body to Account

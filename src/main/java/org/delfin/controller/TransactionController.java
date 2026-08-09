@@ -40,14 +40,14 @@ public class TransactionController {
     @PostMapping
     @Operation(summary = "New transaction", description = "Creates a new transaction")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Transaction created"),
+            @ApiResponse(responseCode = "201", description = "Transaction created"),
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "500", description = "Internal error")
     })
     public ResponseEntity<Transaction> newTransaction(@RequestBody Transaction transaction) {
         try {
             LOG.info("Add transaction: " + transaction.toString());
-            return ResponseEntity.ok(transactionService.createTransaction(transaction));
+            return ResponseEntity.status(HttpStatus.CREATED).body(transactionService.createTransaction(transaction));
         } catch (AccountNotFoundException ex) {
             LOG.error("Failed to find account for transaction " + transaction);
             return ResponseEntity.notFound().build();

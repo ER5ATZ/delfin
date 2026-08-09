@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.delfin.model.Currency;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 /**
@@ -22,6 +22,8 @@ public class AccountEntity extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customerid", nullable = false)
     private CustomerEntity customer;
+    @Column(name = "accountnumber", nullable = false)
+    private String accountNumber;
     @Column(nullable = false)
     private String currency = Currency.USD.code();
     @Column(nullable = false)
@@ -35,7 +37,7 @@ public class AccountEntity extends AbstractEntity {
     public String toString() {
         return "Account{" +
                 "id=" + getId() +
-                ", customerId=" + getCustomer().getId() +
+                ", customerId=" + (customer != null ? customer.getId() : "null") +
                 ", currency='" + getCurrency() + '\'' +
                 ", balance=" + getBalance() +
                 ", accountLimit=" + getAccountLimit() +

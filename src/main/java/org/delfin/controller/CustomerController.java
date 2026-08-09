@@ -13,6 +13,7 @@ import org.delfin.service.CustomerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,14 +40,14 @@ public class CustomerController {
     @PostMapping
     @Operation(summary = "Create customer", description = "Creates a new customer")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Customer created"),
+            @ApiResponse(responseCode = "201", description = "Customer created"),
             //@ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "500", description = "Internal error")
     })
     public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer) {
         LOG.info("Create customer: " + customer.toEntity().toString());
         try {
-            return ResponseEntity.ok(customerService.save(customer));
+            return ResponseEntity.status(HttpStatus.CREATED).body(customerService.save(customer));
         } catch (Exception ex) {
             LOG.error("Unexpected internal error: " + ex);
             return ResponseEntity.internalServerError().build();

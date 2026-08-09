@@ -9,8 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
-import java.time.LocalDateTime;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +63,6 @@ public class UserService {
         existingUser.setFailedlogins(updatedUser.getFailedlogins());
         existingUser.setActive(updatedUser.isActive());
         existingUser.setRoles(updatedUser.getRoles());
-        existingUser.setUpdated(LocalDateTime.now());
         return new User(userRepository.save(existingUser));
     }
 
@@ -90,7 +88,6 @@ public class UserService {
         String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
         entity.setPassword(hashedPassword);
         entity.setFailedlogins(0);
-        entity.setUpdated(LocalDateTime.now());
 
         userRepository.save(entity);
     }

@@ -23,6 +23,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Transaction {
     private Long id;
+    /**
+     * Typed as Object for HATEOAS support: holds a Long (account ID) on input,
+     * or a {@link Link} (HATEOAS link to account resource) on output.
+     */
     private Object account;
     private String externalId;
     private CalculationType transactionType;
@@ -32,12 +36,11 @@ public class Transaction {
     private LocalDateTime transactionTime;
     private boolean booked;
 
-    public Transaction(TransactionEntity transactionEntity) {
+    public Transaction(TransactionEntity transactionEntity, CalculationType calculationType) {
         this.id = transactionEntity.getId();
         this.account = Link.of(Endpoint.ACCOUNT + transactionEntity.getAccount().getId());
         this.externalId = transactionEntity.getExternalId();
-        TransactionTypeEntity tt = TransactionTypeService.getTransactionTypeById(transactionEntity.getTransactionTypeId());
-        this.transactionType = CalculationType.of(tt.getCalculation());
+        this.transactionType = calculationType;
         this.amount = transactionEntity.getAmount();
         this.prevBalance = transactionEntity.getPrevBalance();
         this.newBalance = transactionEntity.getNewBalance();
@@ -53,7 +56,7 @@ public class Transaction {
         accountEntity.setId((Long) getAccount());
         transactionEntity.setAccount(accountEntity);
         transactionEntity.setExternalId(getExternalId());
-        TransactionTypeEntity tt = TransactionTypeService.getTransactionTypeByCalculationType(getTransactionTime().toString());
+        TransactionTypeEntity tt = TransactionTypeService.getTransactionTypeByCalculationType(getTransactionType().name().toLowerCase());
         transactionEntity.setTransactionTypeId(tt.getId());
         transactionEntity.setAmount(getAmount());
         transactionEntity.setPrevBalance(getPrevBalance());

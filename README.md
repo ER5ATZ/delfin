@@ -1,82 +1,77 @@
 # Del/Finanz System
-This is a simple application for managing customer accounts. It allows users to create, update, and delete customer and account information and add and view transactions.
+
+A Spring Boot application for managing customer accounts, transactions, and user authentication.
 
 ## Prerequisites
-To run this application, you'll need the following:
 
-* Java 8 or higher
-* Maven 3.6 or higher
+* Java 21 or higher
+* Maven 3.9+ (wrapper included: `./mvnw`)
 
 ## Getting Started
+
 ### Clone the repository:
-```bash 
-git clone https://github.com/ER5ATZ/delfin.git
-```
-
-### Create a database and update the application.properties file with the database URL, username, and password:
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/[database-name]
-spring.datasource.username=[username]
-spring.datasource.password=[password]
-```
-
-
-### Create a folder for logs (if it does not exist already) and add it as an environment variable:
 ```bash
-echo 'export APP_LOGS_PATH="/Users/Shared/Logs"' >> ~/.bash_profile
-source ~/.bash_profile
+git clone https://github.com/ER5ATZ/delfin.git
+cd delfin
 ```
-
 
 ### Run the application:
 ```bash
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
-Open the application in your browser at http://localhost:8080.
 
+The application uses an embedded H2 database by default. Open http://localhost:8080.
 
-## Usage Customer API
-### GET /api/customer/{id}
-Retrieves a customer by ID.
+### Run with dev profile (verbose logging):
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+```
 
-### POST /api/customer/
-Creates a new customer.
+### Run tests:
+```bash
+./mvnw test
+```
 
-### PUT /api/customers/
-Updates a customer by ID.
+## API Endpoints
 
-### DELETE /api/customer/{id}
-Deletes a customer by ID.
+### Customer API
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/customer/{id}` | Retrieve customer by ID |
+| POST | `/api/customer/` | Create a new customer (201) |
+| PUT | `/api/customer/` | Update a customer |
+| DELETE | `/api/customer/{id}` | Delete a customer |
 
-## Account API
-### GET /api/account/{id}
-Retrieves an account by ID.
+### Account API
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/account/{id}` | Retrieve account by ID |
+| POST | `/api/account/` | Create a new account (201) |
+| PUT | `/api/account/` | Update an account |
+| DELETE | `/api/account/{id}` | Delete an account |
 
-### POST /api/account/
-Creates a new account.
+### Transaction API
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/transaction/{id}` | Retrieve transaction by ID |
+| POST | `/api/transaction/` | Create a new transaction (201) |
 
-### PUT /api/account/
-Updates an account by ID.
+### API Documentation
+Swagger UI is available at http://localhost:8080/swagger-ui.html when the application is running.
 
-### DELETE /api/account/{id}
-Deletes an account by ID.
+## Technologies
 
-## Transaction API
-### POST /api/transaction/
-Generates a new transaction.
-
-### GET /api/transaction/{id}
-Retrieves a transaction by ID.
-
-## Technologies Used
-* Java 8
-* Spring Boot
+* Java 21
+* Spring Boot 3.5.14
 * Spring Data JPA
-* H2
+* Spring HATEOAS
+* Spring Security
+* H2 (embedded, development)
+* Flyway (database migrations)
+* Springdoc OpenAPI (Swagger UI)
+* Lombok
 * Maven
 
-### License
-This project is licensed under the MIT License. See the LICENSE file for details.
+## License
 
-### Acknowledgements
-This application was created as a sample project for educational purposes only. It is not intended for commercial use.
+This project is licensed under the MIT License. See the LICENSE file for details.

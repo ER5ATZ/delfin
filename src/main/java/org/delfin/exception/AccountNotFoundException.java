@@ -3,7 +3,7 @@ package org.delfin.exception;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 
 /**
  * @author Andreas Ersch <andreas.ersch@gmail.com>
