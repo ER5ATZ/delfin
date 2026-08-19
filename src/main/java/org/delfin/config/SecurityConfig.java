@@ -14,6 +14,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
+            // Intentional: no auth for domain modeling showcase. See docs/adr/002-no-authentication.md
             .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
         return http.build();
     }

@@ -1,10 +1,5 @@
 /.idea
 /target
-
-# kiro
-/.kiro
-/PROGRESS.md
-
-# Kiro
-.kiro/
-PROGRESS.md
+target/
+*.log
+cmd-output.log
