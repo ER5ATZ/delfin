@@ -2,4 +2,3 @@
 /target
 target/
 *.log
-cmd-output.log

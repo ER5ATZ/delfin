@@ -1,77 +1,95 @@
-# Del/Finanz System
+# Del/Finanz - Banking Domain Model
 
-A Spring Boot application for managing customer accounts, transactions, and user authentication.
+A showcase of domain-driven design principles applied to a banking system. Event-sourced ledger, immutable transactions, idempotent transfers, and optimistic concurrency control.
 
-## Prerequisites
+## Quick Start
 
-* Java 21 or higher
-* Maven 3.9+ (wrapper included: `./mvnw`)
-
-## Getting Started
-
-### Clone the repository:
-```bash
-git clone https://github.com/ER5ATZ/delfin.git
-cd delfin
-```
-
-### Run the application:
 ```bash
 ./mvnw spring-boot:run
 ```
 
-The application uses an embedded H2 database by default. Open http://localhost:8080.
+Open http://localhost:8080/swagger-ui.html for interactive API docs.
 
-### Run with dev profile (verbose logging):
+## Try It
+
+After starting the app, try the transfer flow:
+
 ```bash
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+# Create a customer
+curl -s -X POST http://localhost:8080/api/customers \
+  -H "Content-Type: application/json" \
+  -d '{"firstName":"Max","lastName":"Mustermann"}'
+
+# Deposit funds (replace ACCOUNT_ID)
+curl -s -X POST http://localhost:8080/api/accounts/ACCOUNT_ID/entries \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: deposit-001" \
+  -d '{"type":"CREDIT","amount":1000.00,"currency":"EUR","description":"Initial deposit"}'
+
+# Transfer (replay-safe via Idempotency-Key)
+curl -s -X POST http://localhost:8080/api/transfers \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: transfer-001" \
+  -d '{"sourceAccountId":"ACC1","destinationAccountId":"ACC2","amount":250.00,"currency":"EUR","description":"Rent"}'
 ```
 
-### Run tests:
+For the full flow with all endpoints, see [`http/transfer-flow.http`](http/transfer-flow.http) (works in IntelliJ and VS Code REST Client).
+
+## API Overview
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/api/customers` | Create customer |
+| GET | `/api/customers/{id}` | Get customer with accounts |
+| POST | `/api/accounts` | Create account |
+| GET | `/api/accounts/{id}` | Get account with balance |
+| GET | `/api/accounts/{id}/entries` | List ledger entries (paginated) |
+| POST | `/api/accounts/{id}/entries` | Deposit or withdraw |
+| POST | `/api/transfers` | Transfer between accounts |
+
+## Design Decisions
+
+Each design choice is documented in an Architecture Decision Record:
+
+- [ADR 001: Event-Sourced Ledger](docs/adr/001-event-sourced-ledger.md) - balance derived from immutable entries
+- [ADR 002: No Authentication](docs/adr/002-no-authentication.md) - public API for showcase simplicity
+- [ADR 003: Optimistic Locking](docs/adr/003-optimistic-locking.md) - concurrent transfer safety
+- [ADR 004: Idempotency](docs/adr/004-idempotency.md) - safe request retries
+
+## Architecture
+
+```mermaid
+graph TD
+  Customer["Customer"]
+  Account["Account<br/>@Version for optimistic locking"]
+  LedgerEntry["LedgerEntry<br/>Immutable, append-only"]
+  
+  Customer -->|owns| Account
+  Account -->|has many| LedgerEntry
+  
+  Balance["Balance = Σ CREDIT - Σ DEBIT"]
+  LedgerEntry -->|derives| Balance
+```
+
+## Tech Stack
+
+- Java 21
+- Spring Boot 3.5.14
+- Spring Data JPA with Hibernate 6
+- Spring HATEOAS
+- H2 in-memory database
+- Flyway migrations
+- Springdoc OpenAPI (Swagger UI)
+- JUnit 5 + Mockito + AssertJ
+
+## Running Tests
+
 ```bash
 ./mvnw test
 ```
 
-## API Endpoints
-
-### Customer API
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/customer/{id}` | Retrieve customer by ID |
-| POST | `/api/customer/` | Create a new customer (201) |
-| PUT | `/api/customer/` | Update a customer |
-| DELETE | `/api/customer/{id}` | Delete a customer |
-
-### Account API
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/account/{id}` | Retrieve account by ID |
-| POST | `/api/account/` | Create a new account (201) |
-| PUT | `/api/account/` | Update an account |
-| DELETE | `/api/account/{id}` | Delete an account |
-
-### Transaction API
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/transaction/{id}` | Retrieve transaction by ID |
-| POST | `/api/transaction/` | Create a new transaction (201) |
-
-### API Documentation
-Swagger UI is available at http://localhost:8080/swagger-ui.html when the application is running.
-
-## Technologies
-
-* Java 21
-* Spring Boot 3.5.14
-* Spring Data JPA
-* Spring HATEOAS
-* Spring Security
-* H2 (embedded, development)
-* Flyway (database migrations)
-* Springdoc OpenAPI (Swagger UI)
-* Lombok
-* Maven
+Test coverage: domain model (unit), services (unit), API layer (integration).
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+MIT
