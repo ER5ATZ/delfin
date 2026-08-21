@@ -10,6 +10,8 @@ A showcase of domain-driven design principles applied to a banking system. Event
 
 Open http://localhost:8080/swagger-ui.html for interactive API docs.
 
+**Live API docs:** https://er5atz.github.io/delfin/
+
 ## Try It
 
 After starting the app, try the transfer flow:

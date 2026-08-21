@@ -26,18 +26,22 @@ jobs:
         run: ./mvnw package -DskipTests -q
 
       - name: Start application and extract OpenAPI spec
+        env:
+          APP_LOGS_PATH: /tmp
         run: |
           java -jar target/delfin-1.0-SNAPSHOT.jar &
           APP_PID=$!
           
           # Wait for app to be ready (max 60 seconds)
           for i in $(seq 1 60); do
-            if curl -f -s http://localhost:8080/v3/api-docs > /dev/null 2>&1; then
-              echo "App ready after ${i}s"
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/api-docs 2>/dev/null || echo "000")
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "App ready after ${i}s (HTTP $HTTP_CODE)"
               break
             fi
             if [ $i -eq 60 ]; then
-              echo "App failed to start within 60s"
+              echo "App failed to start within 60s (last HTTP code: $HTTP_CODE)"
+              curl -v http://localhost:8080/api-docs 2>&1 || true
               kill $APP_PID 2>/dev/null
               exit 1
             fi
@@ -45,7 +49,7 @@ jobs:
           done
           
           # Extract OpenAPI spec
-          curl -f -s http://localhost:8080/v3/api-docs > docs/openapi.json
+          curl -f -s http://localhost:8080/api-docs > docs/openapi.json
           echo "OpenAPI spec generated successfully"
           
           # Stop app
