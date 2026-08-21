@@ -22,23 +22,34 @@ jobs:
           java-version: '21'
           distribution: 'corretto'
 
-      - name: Start Spring Boot app in background
-        run: |
-          ./mvnw spring-boot:run &
-          sleep 10
+      - name: Build application
+        run: ./mvnw package -DskipTests -q
 
-      - name: Generate OpenAPI spec
+      - name: Start application and extract OpenAPI spec
         run: |
-          if curl -f -s http://localhost:8080/v3/api-docs > docs/openapi.json; then
-            echo "OpenAPI spec generated successfully"
-          else
-            echo "Failed to generate OpenAPI spec"
-            exit 1
-          fi
-
-      - name: Stop Spring Boot app
-        run: pkill -f "spring-boot:run"
-        continue-on-error: true
+          java -jar target/delfin-1.0-SNAPSHOT.jar &
+          APP_PID=$!
+          
+          # Wait for app to be ready (max 60 seconds)
+          for i in $(seq 1 60); do
+            if curl -f -s http://localhost:8080/v3/api-docs > /dev/null 2>&1; then
+              echo "App ready after ${i}s"
+              break
+            fi
+            if [ $i -eq 60 ]; then
+              echo "App failed to start within 60s"
+              kill $APP_PID 2>/dev/null
+              exit 1
+            fi
+            sleep 1
+          done
+          
+          # Extract OpenAPI spec
+          curl -f -s http://localhost:8080/v3/api-docs > docs/openapi.json
+          echo "OpenAPI spec generated successfully"
+          
+          # Stop app
+          kill $APP_PID 2>/dev/null
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
